@@ -34,7 +34,7 @@ bool MCP4725_setVoltage(i2c_inst_t * i2c_port, uint8_t i2c_addr, bool writeEEpro
 #define I2C_PORT i2c0
 #define I2C_SDA 16
 #define I2C_SCL 17
-#define DAC_ADDRESS 0x62 //Default address no jumpers, floating pins. 
+#define DAC_ADDRESS 0x62 //Default address no jumpers. 
 
 
 #define THRESHOLD_LO 2000
@@ -67,10 +67,18 @@ float measure_frequency_live_adc() {
     // Period in microseconds
     uint64_t period_us = t_end - t_start;
     if (period_us == 0) return 0;
-    printf("Period: %llu us\n", period_us);
+    // printf("Period: %llu us\n", period_us);
     // Convert to frequency
     float freq = 1e6f / (float)period_us;
     return freq;
+}
+
+float average_freq(float freq, uint16_t count){
+    uint32_t sum; 
+    for(int i = 0; i < count; i++){
+        sum += freq; 
+    }
+    return sum/count;
 }
 
 
@@ -119,6 +127,7 @@ int main()
     };
     
     float freq_buffer[AVG_COUNT];
+    float freq = 0; 
     
     while (true) {
         for (int i = 0; i < 8; i++) {
@@ -133,15 +142,9 @@ int main()
             
 
             float freqAvg;
-            // Measure frequency 64 times at each DAC step
-            for (int j = 0; j < AVG_COUNT; j++) {
-                freq_buffer[j] = measure_frequency_live_adc();
-                freqAvg += freq_buffer[j];
-                printf("Measured Frequency: %u Hz\n", freq_buffer[j]);
-                sleep_ms(100);
-            }
+            freq = measure_frequency_live_adc();
+            freqAvg = average_freq(freq, AVG_COUNT);
 
-            freqAvg = freqAvg/AVG_COUNT;
             printf("Average Frequency: %f Hz\n", freqAvg);
             freqAvg = 0;
             sleep_ms(2000);
