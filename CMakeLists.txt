@@ -28,41 +28,34 @@ set(PICO_BOARD pico2 CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(Dactest_2 C CXX ASM)
+project(MP1FINAL C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Dactest_2 Dactest_2.c)
+add_executable(MP1FINAL MP1FINAL.c )
 
-pico_set_program_name(Dactest_2 "Dactest_2")
-pico_set_program_version(Dactest_2 "0.1")
+pico_set_program_name(MP1FINAL "MP1FINAL")
+pico_set_program_version(MP1FINAL "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(Dactest_2 0)
-pico_enable_stdio_usb(Dactest_2 0)
+pico_enable_stdio_uart(MP1FINAL 0)
+pico_enable_stdio_usb(MP1FINAL 0)
 
 # Add the standard library to the build
-target_link_libraries(Dactest_2
-        pico_stdlib)
-
-# Add the standard include files to the build
-target_include_directories(Dactest_2 PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
-)
-
-# Add any user requested libraries
-target_link_libraries(Dactest_2
+target_link_libraries(MP1FINAL
         pico_stdlib
         pico_stdio_usb
         hardware_i2c
         hardware_adc
-        )
+        pico_multicore)
 
-target_link_options(Dactest_2 PRIVATE -Wl,-u,_printf_float)
+# Add the standard include files to the build
+target_include_directories(MP1FINAL PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+)
 
-pico_add_extra_outputs(Dactest_2)
-
+pico_add_extra_outputs(MP1FINAL)
 
